@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="cabApp">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Cab Booking</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- AngularJS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-route.min.js"></script>
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: #f9fafb; }
+    header { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    footer { background: #f3f4f6; text-align: center; padding: 12px; color: #6b7280; }
+    .btn { display: inline-block; padding: 10px 16px; border-radius: 8px; font-weight: 500; text-align: center; }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-primary:hover { background: #1e40af; }
+    .btn-secondary { background: #16a34a; color: white; }
+    .btn-secondary:hover { background: #15803d; }
+    input, select, textarea { border: 1px solid #d1d5db; border-radius: 6px; padding: 8px; width: 100%; }
+    nav a { margin: 0 8px; color: #2563eb; font-weight: 500; }
+    nav a:hover { text-decoration: underline; }
+    .driver-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .driver-img { width: 100%; height: 160px; object-fit: cover; border-radius: 10px; }
+  </style>
+</head>
+
+<body ng-controller="MainCtrl as main" class="flex flex-col min-h-screen">
+
+  <!-- Header -->
+  <header class="p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="c:\Users\Asus\AppData\Local\Temp\images-1.jpg" class="w-10 h-10" />
+      <h1 class="text-2xl font-bold text-blue-600">Cabify</h1>
+    </div>
+    <nav>
+      <a ng-href="#!/">Home</a>
+      <a ng-href="#!/book" ng-if="main.isLoggedIn">Book</a>
+      <a ng-href="#!/history" ng-if="main.isLoggedIn">History</a>
+      <a ng-href="#!/login" ng-if="!main.isLoggedIn">Login</a>
+      <a ng-href="#!/signup" ng-if="!main.isLoggedIn">Signup</a>
+      <button ng-if="main.isLoggedIn" ng-click="main.logout()" class="ml-3 text-red-600 font-semibold">Logout</button>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 container mx-auto p-6">
+    <div ng-view></div>
+  </main>
+
+  <!-- Footer -->
+  <footer>© 2025 Cabify — Online Cab Booking </footer>
+
+  <!-- AngularJS Views -->
+
+  <!-- Home -->
+  <script type="text/ng-template" id="home.html">
+    <div class="bg-white p-6 rounded-lg shadow text-center">
+      <img src="c:\Users\Asus\AppData\Local\Temp\images.jpg" class="rounded-lg mb-4 w-full max-h-80 object-cover" alt="Cab">
+      <h2 class="text-3xl font-bold text-blue-600 mb-3">Welcome to Cabify</h2>
+      <p class="text-gray-600 mb-6">Book your ride instantly and get accurate fare estimates.</p>
+      <div ng-if="!main.isLoggedIn">
+        <a ng-href="#!/login" class="btn btn-primary">Login</a>
+        <a ng-href="#!/signup" class="btn btn-secondary ml-3">Sign Up</a>
+      </div>
+      <div ng-if="main.isLoggedIn">
+        <a ng-href="#!/book" class="btn btn-primary">Book a Ride</a>
+        <a ng-href="#!/history" class="btn btn-secondary ml-3">My Bookings</a>
+      </div>
+    </div>
+  </script>
+
+  <!-- Login -->
+  <script type="text/ng-template" id="login.html">
+    <div class="bg-white p-6 rounded-lg shadow max-w-md mx-auto">
+      <h2 class="text-2xl font-bold text-blue-600 mb-4 text-center">Login</h2>
+      <form ng-submit="login.login()">
+        <label>Email</label>
+        <input type="email" ng-model="login.user.email" required><br><br>
+        <label>Password</label>
+        <input type="password" ng-model="login.user.password" required><br><br>
+        <button class="btn btn-primary w-full">Login</button>
+      </form>
+      <p class="text-center mt-4">No account? <a ng-href="#!/signup" class="text-blue-600">Sign Up</a></p>
+    </div>
+  </script>
+
+  <!-- Signup -->
+  <script type="text/ng-template" id="signup.html">
+    <div class="bg-white p-6 rounded-lg shadow max-w-md mx-auto">
+      <h2 class="text-2xl font-bold text-blue-600 mb-4 text-center">Sign Up</h2>
+      <form ng-submit="signup.register()">
+        <label>Name</label>
+        <input type="text" ng-model="signup.user.name" required><br><br>
+        <label>Email</label>
+        <input type="email" ng-model="signup.user.email" required><br><br>
+        <label>Password</label>
+        <input type="password" ng-model="signup.user.password" required><br><br>
+        <button class="btn btn-secondary w-full">Create Account</button>
+      </form>
+    </div>
+  </script>
+
+  <!-- Book Ride -->
+  <script type="text/ng-template" id="book.html">
+    <div class="bg-white p-6 rounded-lg shadow max-w-lg mx-auto">
+      <img src="c:\Users\Asus\AppData\Local\Temp\Untitled.jpg" class="rounded-lg mb-4 w-full max-h-80 object-cover" alt="Booking Image">
+      <h2 class="text-2xl font-bold text-blue-600 mb-4">Book a Ride</h2>
+      <form ng-submit="book.bookRide()">
+        <label>Pickup Location</label>
+        <input ng-model="book.data.pickup" required><br><br>
+        <label>Dropoff Location</label>
+        <input ng-model="book.data.dropoff" required><br><br>
+        <label>Distance (km)</label>
+        <input type="number" ng-model="book.data.distance" required><br><br>
+        <label>Duration (min)</label>
+        <input type="number" ng-model="book.data.duration" required><br><br>
+        <button class="btn btn-primary w-full">Book Now</button>
+      </form>
+
+      <div ng-if="book.confirmed" class="mt-6 text-center border-t pt-4">
+        <h3 class="text-xl font-semibold text-green-600 mb-2">Ride Confirmed!</h3>
+        <img src="{{book.driver.image}}" class="w-40 h-40 rounded-full mx-auto mb-3 object-cover">
+        <p><strong>Driver:</strong> {{book.driver.name}} ({{book.driver.car}})</p>
+        <p><strong>Fare:</strong> ₹{{book.fare | number:2}}</p>
+        <a ng-href="#!/payment" class="btn btn-secondary mt-3 inline-block">Proceed to Payment</a>
+      </div>
+    </div>
+  </script>
+
+  <!-- Payment -->
+  <script type="text/ng-template" id="payment.html">
+    <div class="bg-white p-6 rounded-lg shadow max-w-md mx-auto text-center">
+      <img src="https://cdn.pixabay.com/photo/2016/11/19/14/00/credit-card-1833611_960_720.jpg" class="rounded-lg mb-4 w-full max-h-64 object-cover">
+      <h2 class="text-2xl font-bold text-blue-600 mb-4">Payment</h2>
+      <p><strong>Amount:</strong> ₹{{pay.fare | number:2}}</p>
+      <select ng-model="pay.method" class="my-4">
+        <option value="">Select Payment Method</option>
+        <option>UPI</option>
+        <option>Credit Card</option>
+        <option>Cash</option>
+      </select>
+      <button ng-click="pay.complete()" class="btn btn-primary w-full">Complete Payment</button>
+    </div>
+  </script>
+
+  <!-- Feedback -->
+  <script type="text/ng-template" id="feedback.html">
+    <div class="bg-white p-6 rounded-lg shadow max-w-md mx-auto text-center">
+      <img src="https://cdn.pixabay.com/photo/2017/01/31/23/44/feedback-2023678_960_720.png" class="rounded-lg mb-4 w-40 h-40 mx-auto object-cover">
+      <h2 class="text-2xl font-bold text-blue-600 mb-4">Feedback</h2>
+      <form ng-submit="fb.submit()">
+        <label>Rating (1–5)</label>
+        <input type="number" min="1" max="5" ng-model="fb.rating" required><br><br>
+        <label>Comments</label>
+        <textarea ng-model="fb.comment" rows="3"></textarea><br><br>
+        <button class="btn btn-secondary w-full">Submit Feedback</button>
+      </form>
+    </div>
+  </script>
+
+  <!-- History -->
+  <script type="text/ng-template" id="history.html">
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-2xl font-bold text-blue-600 mb-4">My Bookings</h2>
+      <div ng-repeat="b in hist.list" class="border p-3 mb-3 rounded flex items-center space-x-4">
+        <img src="https://cdn-icons-png.flaticon.com/512/3097/3097144.png" class="w-12 h-12">
+        <div>
+          <p><strong>{{b.pickup}}</strong> → <strong>{{b.dropoff}}</strong></p>
+          <p>Driver: {{b.driver}}</p>
+          <p>Fare: ₹{{b.fare | number:2}} — {{b.status}}</p>
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <!-- AngularJS Logic -->
+  <script>
+    const app = angular.module('cabApp', ['ngRoute']);
+
+    app.config($routeProvider => {
+      $routeProvider
+        .when('/', { templateUrl: 'home.html' })
+        .when('/login', { templateUrl: 'login.html', controller: 'LoginCtrl', controllerAs: 'login' })
+        .when('/signup', { templateUrl: 'signup.html', controller: 'SignupCtrl', controllerAs: 'signup' })
+        .when('/book', { templateUrl: 'book.html', controller: 'BookCtrl', controllerAs: 'book' })
+        .when('/payment', { templateUrl: 'payment.html', controller: 'PaymentCtrl', controllerAs: 'pay' })
+        .when('/feedback', { templateUrl: 'feedback.html', controller: 'FeedbackCtrl', controllerAs: 'fb' })
+        .when('/history', { templateUrl: 'history.html', controller: 'HistoryCtrl', controllerAs: 'hist' })
+        .otherwise({ redirectTo: '/' });
+    });
+
+    app.controller('MainCtrl', function($location, $scope) {
+      const vm = this;
+      vm.isLoggedIn = !!localStorage.getItem('loggedUser');
+      $scope.$on('$routeChangeSuccess', () => vm.isLoggedIn = !!localStorage.getItem('loggedUser'));
+      vm.logout = function() {
+        localStorage.removeItem('loggedUser');
+        vm.isLoggedIn = false;
+        $location.path('/');
+      };
+    });
+
+    app.controller('SignupCtrl', function($location) {
+      const vm = this;
+      vm.user = {};
+      vm.register = function() {
+        localStorage.setItem('user_' + vm.user.email, JSON.stringify(vm.user));
+        alert('Signup successful! Please login.');
+        $location.path('/login');
+      };
+    });
+
+    app.controller('LoginCtrl', function($location) {
+      const vm = this;
+      vm.user = {};
+      vm.login = function() {
+        const data = localStorage.getItem('user_' + vm.user.email);
+        if (!data) return alert('User not found!');
+        const saved = JSON.parse(data);
+        if (saved.password !== vm.user.password) return alert('Incorrect password!');
+        localStorage.setItem('loggedUser', saved.email);
+        alert('Login successful!');
+        $location.path('/book');
+      };
+    });
+
+    app.controller('BookCtrl', function($location) {
+      const vm = this;
+      vm.data = {};
+      const drivers = [
+        { name: 'Asha', car: 'Toyota Etios', image: 'https://cdn.pixabay.com/photo/2017/05/31/22/06/driver-2362331_960_720.jpg' },
+        { name: 'Ram', car: 'Swift Dzire', image: 'https://cdn.pixabay.com/photo/2017/09/04/18/00/man-2717062_960_720.jpg' },
+        { name: 'Neha', car: 'Honda City', image: 'https://cdn.pixabay.com/photo/2017/06/10/07/18/woman-2381005_960_720.jpg' }
+      ];
+      vm.bookRide = function() {
+        vm.driver = drivers[Math.floor(Math.random() * drivers.length)];
+        vm.fare = 50 + vm.data.distance * 12 + vm.data.duration * 1.5;
+        vm.confirmed = true;
+        const booking = {
+          pickup: vm.data.pickup,
+          dropoff: vm.data.dropoff,
+          fare: vm.fare,
+          driver: vm.driver.name,
+          status: 'Pending Payment'
+        };
+        let list = JSON.parse(localStorage.getItem('bookings') || '[]');
+        list.push(booking);
+        localStorage.setItem('bookings', JSON.stringify(list));
+        localStorage.setItem('lastFare', vm.fare);
+      };
+    });
+
+    app.controller('PaymentCtrl', function($location) {
+      const vm = this;
+      vm.fare = localStorage.getItem('lastFare');
+      vm.complete = function() {
+        alert('Payment successful!');
+        let list = JSON.parse(localStorage.getItem('bookings') || '[]');
+        if (list.length) list[list.length - 1].status = 'Paid';
+        localStorage.setItem('bookings', JSON.stringify(list));
+        $location.path('/feedback');
+      };
+    });
+
+    app.controller('FeedbackCtrl', function($location) {
+      const vm = this;
+      vm.submit = function() {
+        alert('Thanks for your feedback!');
+        $location.path('/history');
+      };
+    });
+
+    app.controller('HistoryCtrl', function() {
+      const vm = this;
+      vm.list = JSON.parse(localStorage.getItem('bookings') || '[]');
+    });
+  </script>
+</body>
+</html>
