@@ -22,11 +22,10 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+                stage('Deploy') {
             steps {
-                echo 'Deploying project...'
-                // Example: Copy files to local server folder
-                sh 'cp -r * /var/www/html/'
+                echo "Deploying project..."
+                bat 'echo Deployment done'
             }
         }
     }
